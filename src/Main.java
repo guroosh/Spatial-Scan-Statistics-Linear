@@ -21,19 +21,19 @@ public class Main {
         double Q = a1n2 + n2n3 + a2n3;
         double R = a1n1 + n1n4 + a2n4;
         double S = a1n2 + n2n4 + a2n4;
-        ReturnObject path2 = new ReturnObject();
+        ReturnObject _2nodes = new ReturnObject();
         if (P <= Q && P <= R && P <= S)
-            path2 = new ReturnObject(a1, n1, n2, a2);
+            _2nodes = new ReturnObject(n1, n3);
         if (Q <= P && Q <= R && Q <= S)
-            path2 = new ReturnObject(a1, n2, n2, a2);
+            _2nodes = new ReturnObject(n2, n3);
         if (R <= Q && R <= P && R <= S)
-            path2 = new ReturnObject(a1, n1, n4, a2);
+            _2nodes = new ReturnObject(n1, n4);
         if (S <= Q && S <= R && S <= P)
-            path2 = new ReturnObject(a1, n2, n4, a2);
-        return get_points2(a1, path2.n1) + get_points2(a2, path2.n2) + number_of_activities_between_nodes.get(node_map.get(path2.n1)).get(node_map.get(path2.n2));
+            _2nodes = new ReturnObject(n2, n4);
+        return get_points2(a1, _2nodes.a1_node) + get_points2(a2, _2nodes.a2_node) + number_of_activities_between_nodes.get(node_map.get(_2nodes.a1_node)).get(node_map.get(_2nodes.a2_node));
     }
 
-    private static DistAndPathSingle get_distance_using_filter(Activity a1, Activity a2) {
+    private static DistAndPathSingle get_distance_and_path_using_filter(Activity a1, Activity a2) {
         int n1 = a1.e.n1;
         int n2 = a1.e.n2;
         int n3 = a2.e.n1;
@@ -59,17 +59,17 @@ public class Main {
             return new DistAndPathSingle(Q, paths.get(node_map.get(n2))[node_map.get(n3)]);
         if (R <= Q && R <= P && R <= S)
             return new DistAndPathSingle(R, paths.get(node_map.get(n1))[node_map.get(n4)]);
-        if (S <= Q && S <= R && S <= P)
+        else    //if (S <= Q && S <= R && S <= P)
             return new DistAndPathSingle(S, paths.get(node_map.get(n2))[node_map.get(n4)]);
-        return null;
+//        return null;
     }
 
     private static int get_points3(Activity a1, Activity a2) {
         double dist = get_distance3(a1, a2);
         int ret_val = 0;
         for (Tuple other_a : a1.e.activity_tuples) {
-            if ((!(other_a.x == a1.x)) || (!(other_a.y == a1.y))) {
-                if ((!(other_a.x == a2.x)) || (!(other_a.y == a2.y))) {
+            if (!(other_a.x == a1.x && other_a.y == a1.y)) {
+                if (!(other_a.x == a2.x && other_a.y == a2.y)) {
                     double dist2 = get_distance4(other_a.x, other_a.y, a1);
                     double dist3 = get_distance4(other_a.x, other_a.y, a2);
                     if (dist2 + dist3 <= dist) {
@@ -86,7 +86,7 @@ public class Main {
         double dist = get_distance2(a, n);
         int ret_val = 0;
         for (Tuple other_a : a.e.activity_tuples) {
-            if ((!(other_a.x == a.x)) || (!(other_a.y == a.y))) {
+            if (!(other_a.x == a.x && other_a.y == a.y)) {
                 double dist2 = get_distance5(other_a.x, other_a.y, n);
                 if (dist2 < dist) {
                     ret_val++;
@@ -156,7 +156,7 @@ public class Main {
         int max_coor_y = 36;
         int min_coor_x = -117;
         int min_coor_y = 35;
-
+//
 //        int max_coor_x = 3;
 //        int max_coor_y = 3;
 //        int min_coor_x = -1;
@@ -203,7 +203,6 @@ public class Main {
             fr = new FileReader("edges.txt");
             br = new BufferedReader(fr);
             String sCurrentLine;
-            int index = 0;
             while ((sCurrentLine = br.readLine()) != null) {
 //                System.out.println(sCurrentLine);
                 String[] s = sCurrentLine.split(" ");
@@ -253,12 +252,6 @@ public class Main {
         Main.paths = paths;
 
 
-        /*
-        plt.xlim
-        plt.ylim
-        plt.plot x and y
-         */
-
         //generating activities for each edge
         ArrayList<Activity> activities = new ArrayList<>();
         int index1 = 0;
@@ -270,7 +263,7 @@ public class Main {
             double y2 = y.get(node_map.get(e.n2));
 //            System.out.println(x1+" "+x2+" "+y1+" "+y2);
             Random r = new Random();
-            int number_of_activities = r.nextInt(6);
+            int number_of_activities = r.nextInt(3);
 //            System.out.println(number_of_activities);
             ArrayList<Tuple> temp_activity_list = new ArrayList<>();
             for (int i = 0; i < number_of_activities; i++) {
@@ -284,15 +277,12 @@ public class Main {
                         y_random = y1;
 
                     } else {
-//                        System.out.println("bfuieiesbgusbsdbvbdbvsd");
                         y_random = y1 + (y2 - y1) * r.nextDouble();
                         x_random = x1 - ((y1 - y_random) / slope);
-//                        System.out.println("AAAA: "+x1+" "+x2+" "+x_random);
                     }
                 } else {
                     y_random = y1 + (y2 - y1) * r.nextDouble();
                     x_random = x1;
-//                    System.out.println(x_random+" "+y_random);
                 }
                 temp_activity_list.add(new Tuple(x_random, y_random));
                 // plot the random point
@@ -336,13 +326,15 @@ public class Main {
         for (Activity a1 : activities) {
             for (Activity a2 : activities) {
                 if (a1 != a2) {
-                    DistAndPathSingle distAndPath = get_distance_using_filter(a1, a2);
-                    matrix2[activity_map.get(a1.new_node_starting_index)][activity_map.get(a2.new_node_starting_index)] = distAndPath.dist;
-                    matrix2[activity_map.get(a2.new_node_starting_index)][activity_map.get(a1.new_node_starting_index)] = distAndPath.dist;
-                    activity_path_matrix[activity_map.get(a1.new_node_starting_index)][activity_map.get(a2.new_node_starting_index)] = distAndPath.path;
-//                    System.out.println(distAndPath.path.path);
-                    Collections.reverse(distAndPath.path.path);
-                    activity_path_matrix[activity_map.get(a2.new_node_starting_index)][activity_map.get(a1.new_node_starting_index)] = distAndPath.path;
+                    DistAndPathSingle distAndPathSingle = get_distance_and_path_using_filter(a1, a2);
+                    matrix2[activity_map.get(a1.new_node_starting_index)][activity_map.get(a2.new_node_starting_index)] = distAndPathSingle.dist;
+                    matrix2[activity_map.get(a2.new_node_starting_index)][activity_map.get(a1.new_node_starting_index)] = distAndPathSingle.dist;
+                    activity_path_matrix[activity_map.get(a1.new_node_starting_index)][activity_map.get(a2.new_node_starting_index)] = distAndPathSingle.path;
+                    Path temp_path = new Path();
+                    for (int i = distAndPathSingle.path.path.size() - 1; i >= 0 ; i--) {
+                        temp_path.path.add(distAndPathSingle.path.path.get(i));
+                    }
+                    activity_path_matrix[activity_map.get(a2.new_node_starting_index)][activity_map.get(a1.new_node_starting_index)] = temp_path;
                 }
             }
         }
@@ -545,7 +537,8 @@ public class Main {
             }
         }
 
-        double min_distance_threshold = 0.4;
+        double min_distance_threshold = 0.1; //-1;
+        double max_distance_threshold = 0.3; //100;
         double max_ratio = Double.MIN_VALUE;
 
         int max_a1 = -1;
@@ -554,7 +547,7 @@ public class Main {
         for (int i = 0; i < num_a; i++) {
             for (int j = 0; j < num_a; j++) {
                 if (final_answer[i][j] > max_ratio) {
-                    if (matrix2[i][j] > min_distance_threshold) {
+                    if (matrix2[i][j] > min_distance_threshold && matrix2[i][j] < max_distance_threshold) {
                         max_ratio = final_answer[i][j];
                         max_a1 = i;
                         max_a2 = j;
@@ -601,14 +594,15 @@ public class Main {
         }
 
 
-        write_into_file("output_best_path.txt", best_path);
-        write_into_file("output_nodes.txt", x, y);
-        write_into_file2("output_edges.txt", edges);
-        write_into_file3("output_activities.txt", activities);
+        write_into_file(best_path);
+        write_into_file(x, y);
+        write_into_file2(edges);
+        write_into_file3(activities);
+
     }
 
-    private static void write_into_file(String filename, ArrayList<Tuple> best_path) throws IOException {
-        File fout = new File(filename);
+    private static void write_into_file(ArrayList<Tuple> best_path) throws IOException {
+        File fout = new File("output_best_path.txt");
         FileOutputStream fos = new FileOutputStream(fout);
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fos));
         for (Tuple t : best_path) {
@@ -618,8 +612,8 @@ public class Main {
         bw.close();
     }
 
-    private static void write_into_file3(String filename, ArrayList<Activity> activities) throws IOException {
-        File fout = new File(filename);
+    private static void write_into_file3(ArrayList<Activity> activities) throws IOException {
+        File fout = new File("output_activities.txt");
         FileOutputStream fos = new FileOutputStream(fout);
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fos));
         for (Activity a : activities) {
@@ -629,8 +623,8 @@ public class Main {
         bw.close();
     }
 
-    private static void write_into_file2(String filename, ArrayList<Edge> edges) throws IOException {
-        File fout = new File(filename);
+    private static void write_into_file2(ArrayList<Edge> edges) throws IOException {
+        File fout = new File("output_edges.txt");
         FileOutputStream fos = new FileOutputStream(fout);
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fos));
         for (Edge edge : edges) {
@@ -641,9 +635,9 @@ public class Main {
         bw.close();
     }
 
-    private static void write_into_file(String filename, ArrayList<Double> x, ArrayList<Double> y) throws IOException {
+    private static void write_into_file(ArrayList<Double> x, ArrayList<Double> y) throws IOException {
 
-        File fout = new File(filename);
+        File fout = new File("output_nodes.txt");
         FileOutputStream fos = new FileOutputStream(fout);
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fos));
         for (int i = 0; i < x.size(); i++) {
@@ -660,7 +654,7 @@ class Activity {
     double y;
     Edge e;
 
-    public Activity(int new_nodes_starting_index, double x_random, double y_random, Edge e) {
+    Activity(int new_nodes_starting_index, double x_random, double y_random, Edge e) {
         this.new_node_starting_index = new_nodes_starting_index;
         this.x = x_random;
         this.y = y_random;
@@ -677,16 +671,15 @@ class Activity {
 class Edge {
     int n1;
     int n2;
-    double distance;
+    private double distance;
     int number_of_activities;
     ArrayList<Tuple> activity_tuples;
 
-    public Edge(int n1, int n2, double distance) {
+    Edge(int n1, int n2, double distance) {
         this.n1 = n1;
         this.n2 = n2;
         this.distance = distance;
         number_of_activities = 0;
-        activity_tuples = new ArrayList<>();
     }
 
     @Override
@@ -703,16 +696,8 @@ class Edge {
 class Path {
     ArrayList<Integer> path;
 
-    public Path() {
+    Path() {
         this.path = new ArrayList<>();
-    }
-
-    public Path(int src) {
-        this.path.add(src);
-    }
-
-    public Path(Path path) {
-        this.path.addAll(path.path);
     }
 
     @Override
@@ -731,18 +716,25 @@ class DistAndPath {
     double[] dist;
     Path[] path;
 
-    public DistAndPath(double[] dist, Path[] path) {
+    DistAndPath(double[] dist, Path[] path) {
         this.dist = dist;
         this.path = path;
     }
 
+    @Override
+    public String toString() {
+        StringBuilder a = new StringBuilder();
+        for (Path p : path)
+            a.append(p.toString());
+        return a.toString();
+    }
 }
 
 class DistAndPathSingle {
     double dist;
     Path path;
 
-    public DistAndPathSingle(double dist, Path path) {
+    DistAndPathSingle(double dist, Path path) {
         this.dist = dist;
         this.path = path;
     }
@@ -752,26 +744,22 @@ class Tuple {
     double x;
     double y;
 
-    public Tuple(double x_random, double y_random) {
+    Tuple(double x_random, double y_random) {
         x = x_random;
         y = y_random;
     }
 }
 
 class ReturnObject {
-    Activity a1;
-    int n1;
-    int n2;
-    Activity a2;
+    int a1_node;
+    int a2_node;
 
-    public ReturnObject(Activity a1, int n1, int n2, Activity a2) {
-        this.a1 = a1;
-        this.n1 = n1;
-        this.n2 = n2;
-        this.a2 = a2;
+    ReturnObject(int a1_node, int a2_node) {
+        this.a1_node = a1_node;
+        this.a2_node = a2_node;
     }
 
-    public ReturnObject() {
+    ReturnObject() {
 
     }
 }

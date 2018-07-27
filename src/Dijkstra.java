@@ -37,7 +37,6 @@ class Dijkstra {
                 if (!sptSet[v] && graph[u][v] > 0 &&
                         dist[u] + graph[u][v] < dist[v]) {
                     dist[v] = dist[u] + graph[u][v];
-//                    parent[v].path.clear();
                     parent[v].path.addAll(parent[u].path);
                     parent[v].path.add(v);
                 }
