@@ -1,3 +1,5 @@
+import com.graph.components.*;
+
 import java.io.*;
 import java.util.*;
 
@@ -211,7 +213,7 @@ public class Main {
         System.out.println(rev_node_map.size());
         System.out.println();
 
-        System.out.println("Activity map");
+        System.out.println("com.graph.components.Activity map");
         for (Map.Entry<Integer, Integer> h : activity_map.entrySet()) {
             System.out.println(h.getKey() + ":" + h.getValue());
         }
@@ -331,8 +333,8 @@ public class Main {
         }
         System.out.println(matrix2[max_a1][max_a2]);
         System.out.println("Max density ratio between A and B: " + max_ratio);
-        System.out.println("Activity A: " + node_map.get(activities.get(max_a1).e.n1) + " " + node_map.get(activities.get(max_a1).e.n2) + " " + activities.get(max_a1).toString());
-        System.out.println("Activity B: " + node_map.get(activities.get(max_a2).e.n1) + " " + node_map.get(activities.get(max_a2).e.n2) + " " + activities.get(max_a2).toString());
+        System.out.println("com.graph.components.Activity A: " + node_map.get(activities.get(max_a1).e.n1) + " " + node_map.get(activities.get(max_a1).e.n2) + " " + activities.get(max_a1).toString());
+        System.out.println("com.graph.components.Activity B: " + node_map.get(activities.get(max_a2).e.n1) + " " + node_map.get(activities.get(max_a2).e.n2) + " " + activities.get(max_a2).toString());
         Path path = activity_path_matrix[max_a1][max_a2];
         System.out.println(path.toString());
 
@@ -689,117 +691,3 @@ public class Main {
 
 }
 
-class Activity {
-    int new_node_starting_index;
-    double x;
-    double y;
-    Edge e;
-
-    Activity(int new_nodes_starting_index, double x_random, double y_random, Edge e) {
-        this.new_node_starting_index = new_nodes_starting_index;
-        this.x = x_random;
-        this.y = y_random;
-        this.e = e;
-    }
-
-    @Override
-    public String toString() {
-        return "(" + new_node_starting_index + ", " + x + ", " + y + ", " + e.toString() + ")";
-    }
-}
-
-class Edge {
-    int n1;
-    int n2;
-    private double distance;
-    int number_of_activities;
-    ArrayList<Tuple> activity_tuples;
-
-    Edge(int n1, int n2, double distance) {
-        this.n1 = n1;
-        this.n2 = n2;
-        this.distance = distance;
-        number_of_activities = 0;
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder s = new StringBuilder("[" + n1 + ", " + n2 + ", " + distance + ", " + number_of_activities + ", [");
-        for (Tuple t : activity_tuples) {
-            s.append("(").append(t.x).append(", ").append(t.y).append("), ");
-        }
-        s.append("]");
-        return s.toString();
-    }
-}
-
-class Path {
-    ArrayList<Integer> path;
-
-    Path() {
-        this.path = new ArrayList<>();
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder s = new StringBuilder();
-        s.append("[");
-        for (int i : this.path) {
-            s.append(i).append(", ");
-        }
-        s.append("]");
-        return s.toString();
-    }
-}
-
-class DistAndPath {
-    double[] dist;
-    Path[] path;
-
-    DistAndPath(double[] dist, Path[] path) {
-        this.dist = dist;
-        this.path = path;
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder a = new StringBuilder();
-        for (Path p : path)
-            a.append(p.toString());
-        return a.toString();
-    }
-}
-
-class DistAndPathSingle {
-    double dist;
-    Path path;
-
-    DistAndPathSingle(double dist, Path path) {
-        this.dist = dist;
-        this.path = path;
-    }
-}
-
-class Tuple {
-    double x;
-    double y;
-
-    Tuple(double x_random, double y_random) {
-        x = x_random;
-        y = y_random;
-    }
-}
-
-class ReturnObject {
-    int a1_node;
-    int a2_node;
-
-    ReturnObject(int a1_node, int a2_node) {
-        this.a1_node = a1_node;
-        this.a2_node = a2_node;
-    }
-
-    ReturnObject() {
-
-    }
-}
