@@ -9,10 +9,10 @@ public class Main {
         int n2 = a1.e.n2;
         int n3 = a2.e.n1;
         int n4 = a2.e.n2;
-        double n1n3 = distances.get(node_map.get(n1))[node_map.get(n3)];
-        double n1n4 = distances.get(node_map.get(n1))[node_map.get(n4)];
-        double n2n3 = distances.get(node_map.get(n2))[node_map.get(n3)];
-        double n2n4 = distances.get(node_map.get(n2))[node_map.get(n4)];
+        double n1n3 = distances[node_map.get(n1)][node_map.get(n3)];
+        double n1n4 = distances[node_map.get(n1)][node_map.get(n4)];
+        double n2n3 = distances[node_map.get(n2)][node_map.get(n3)];
+        double n2n4 = distances[node_map.get(n2)][node_map.get(n4)];
         double a1n1 = get_distance2(a1, n1);
         double a1n2 = get_distance2(a1, n2);
         double a2n3 = get_distance2(a2, n3);
@@ -41,10 +41,10 @@ public class Main {
         int n2 = a1.e.n2;
         int n3 = a2.e.n1;
         int n4 = a2.e.n2;
-        double n1n3 = distances.get(node_map.get(n1))[node_map.get(n3)];
-        double n1n4 = distances.get(node_map.get(n1))[node_map.get(n4)];
-        double n2n3 = distances.get(node_map.get(n2))[node_map.get(n3)];
-        double n2n4 = distances.get(node_map.get(n2))[node_map.get(n4)];
+        double n1n3 = distances[node_map.get(n1)][node_map.get(n3)];
+        double n1n4 = distances[node_map.get(n1)][node_map.get(n4)];
+        double n2n3 = distances[node_map.get(n2)][node_map.get(n3)];
+        double n2n4 = distances[node_map.get(n2)][node_map.get(n4)];
         double a1n1 = get_distance2(a1, n1);
         double a1n2 = get_distance2(a1, n2);
         double a2n3 = get_distance2(a2, n3);
@@ -57,13 +57,13 @@ public class Main {
         double S = a1n2 + n2n4 + a2n4;
 
         if (P <= Q && P <= R && P <= S)
-            return new DistAndPathSingle(P, paths.get(node_map.get(n1))[node_map.get(n3)]);
+            return new DistAndPathSingle(P, paths[node_map.get(n1)][node_map.get(n3)]);
         if (Q <= P && Q <= R && Q <= S)
-            return new DistAndPathSingle(Q, paths.get(node_map.get(n2))[node_map.get(n3)]);
+            return new DistAndPathSingle(Q, paths[node_map.get(n2)][node_map.get(n3)]);
         if (R <= Q && R <= P && R <= S)
-            return new DistAndPathSingle(R, paths.get(node_map.get(n1))[node_map.get(n4)]);
+            return new DistAndPathSingle(R, paths[node_map.get(n1)][node_map.get(n4)]);
         else    //if (S <= Q && S <= R && S <= P)
-            return new DistAndPathSingle(S, paths.get(node_map.get(n2))[node_map.get(n4)]);
+            return new DistAndPathSingle(S, paths[node_map.get(n2)][node_map.get(n4)]);
 //        return null;
     }
 
@@ -141,6 +141,39 @@ public class Main {
         return Math.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
     }
 
+    private static void readingNodeFile(int min_coor_x, int min_coor_y, int max_coor_x, int max_coor_y)
+    {
+        BufferedReader br;
+        FileReader fr;
+        //reading files into nodes
+        try {
+            fr = new FileReader("nodes.txt");
+            br = new BufferedReader(fr);
+            String sCurrentLine;
+            int index = 0;
+            while ((sCurrentLine = br.readLine()) != null) {
+//                System.out.println(sCurrentLine);
+                String[] s = sCurrentLine.split(" ");
+                if (min_coor_x < Double.parseDouble(s[1])) {
+                    if (Double.parseDouble(s[1]) < max_coor_x) {
+                        if (min_coor_y < Double.parseDouble(s[2])) {
+                            if (Double.parseDouble(s[2]) < max_coor_y) {
+                                x.add(Double.parseDouble(s[1]));
+                                y.add(Double.parseDouble(s[2]));
+                                node_set.add(Integer.parseInt(s[0]));
+                                node_map.put(Integer.parseInt(s[0]), index);
+                                rev_node_map.put(index, Integer.parseInt(s[0]));
+                                index++;
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     //prints everything
     private static void printingEveryThing(double[][] matrix_, ArrayList<Activity> activities, ArrayList<Edge> edges, int[][] number_of_activities_between_activities, HashMap<Integer, ArrayList<Edge>> node_to_edges_map, double[][] matrix2, Path[][] activity_path_matrix) {
         System.out.println("X");
@@ -216,7 +249,7 @@ public class Main {
             }
             System.out.println();
         }
-        System.out.println(distances.size());
+        System.out.println(distances.length);
         System.out.println();
 
         System.out.println("Shortest path between all nodes");
@@ -226,7 +259,7 @@ public class Main {
             }
             System.out.println();
         }
-        System.out.println(paths.size());
+        System.out.println(paths.length);
         System.out.println();
 
         System.out.println("Activities");
@@ -277,133 +310,172 @@ public class Main {
         System.out.println();
     }
 
-    private static ArrayList<double[]> distances;
-    private static ArrayList<Path[]> paths;
-    private static ArrayList<Double> x = new ArrayList<>();
-    private static ArrayList<Double> y = new ArrayList<>();
-    private static HashSet<Integer> node_set = new HashSet<>();
-    private static HashMap<Integer, Integer> rev_node_map = new HashMap<>();
-    private static HashMap<Integer, Integer> activity_map = new HashMap<>();
-    private static HashMap<Integer, Integer> node_map = new HashMap<>();
-    private static ArrayList<ArrayList<Integer>> number_of_activities_between_nodes = new ArrayList<>();
+    private static void calculatingTheBestAnswerAndPlottingIt() throws IOException {
+        double min_distance_threshold = 0.1; //-1;
+        double max_distance_threshold = 0.3; //100;
+        double max_ratio = Double.MIN_VALUE;
 
-    public static void main(String args[]) throws IOException {
+        int max_a1 = -1;
+        int max_a2 = -1;
 
-        //nodes ending on 21075
-        //activities starting on 21100
-        int new_nodes_starting_index = 21100;
-        // max_coor_x = -math.inf
-        // max_coor_y = -math.inf
-        // min_coor_x = math.inf
-        // min_coor_y = math.inf
+        for (int i = 0; i < num_a; i++) {
+            for (int j = 0; j < num_a; j++) {
+                if (final_answer[i][j] > max_ratio) {
+                    if (matrix2[i][j] > min_distance_threshold && matrix2[i][j] < max_distance_threshold) {
+                        max_ratio = final_answer[i][j];
+                        max_a1 = i;
+                        max_a2 = j;
+                    }
+                }
+            }
+        }
+        System.out.println(matrix2[max_a1][max_a2]);
+        System.out.println("Max density ratio between A and B: " + max_ratio);
+        System.out.println("Activity A: " + node_map.get(activities.get(max_a1).e.n1) + " " + node_map.get(activities.get(max_a1).e.n2) + " " + activities.get(max_a1).toString());
+        System.out.println("Activity B: " + node_map.get(activities.get(max_a2).e.n1) + " " + node_map.get(activities.get(max_a2).e.n2) + " " + activities.get(max_a2).toString());
+        Path path = activity_path_matrix[max_a1][max_a2];
+        System.out.println(path.toString());
 
-        int max_coor_x = -116;
-        int max_coor_y = 36;
-        int min_coor_x = -117;
-        int min_coor_y = 35;
-//
-//        int max_coor_x = 3;
-//        int max_coor_y = 3;
-//        int min_coor_x = -1;
-//        int min_coor_y = -1;
+        //STARTING PLOTTING (WRITING IT INTO FILES)
+        ArrayList<Tuple> best_path = new ArrayList<>();
+        if (path.path.size() == 0) {
+            best_path.add(new Tuple(activities.get(max_a1).x, activities.get(max_a1).y));
+            best_path.add(new Tuple(activities.get(max_a2).x, activities.get(max_a2).y));
+        } else if (path.path.size() == 1) {
+            best_path.add(new Tuple(activities.get(max_a1).x, activities.get(max_a1).y));
+            best_path.add(new Tuple(x.get(path.path.get(0)), y.get(path.path.get(0))));
+            best_path.add(new Tuple(activities.get(max_a2).x, activities.get(max_a2).y));
+        } else {
+            if (node_map.get(activities.get(max_a1).e.n1).equals(path.path.get(0))) {
+                best_path.add(new Tuple(activities.get(max_a1).x, activities.get(max_a1).y));
+                for (int p : path.path) {
+                    best_path.add(new Tuple(x.get(p), y.get(p)));
+                }
+                best_path.add(new Tuple(activities.get(max_a2).x, activities.get(max_a2).y));
+            } else if (node_map.get(activities.get(max_a1).e.n2).equals(path.path.get(0))) {
+                best_path.add(new Tuple(activities.get(max_a1).x, activities.get(max_a1).y));
+                for (int p : path.path) {
+                    best_path.add(new Tuple(x.get(p), y.get(p)));
+                }
+                best_path.add(new Tuple(activities.get(max_a2).x, activities.get(max_a2).y));
+            } else {
+                best_path.add(new Tuple(activities.get(max_a2).x, activities.get(max_a2).y));
+                for (int p : path.path) {
+                    best_path.add(new Tuple(x.get(p), y.get(p)));
+                }
+                best_path.add(new Tuple(activities.get(max_a1).x, activities.get(max_a1).y));
+            }
+        }
+        write_into_file(best_path);
+        write_into_file(x, y);
+        write_into_file2(edges);
+        write_into_file3(activities);
+    }
 
+    private static void addingFinalAnswerMatrix() {
+        //starting calculations for the final answer
+        double total_weight = 0;
+        for (Edge e : edges) {
+            total_weight += get_distance(e);
+        }
 
-        BufferedReader br;
-        FileReader fr;
+        int total_activities = activities.size();
+        System.out.println("Total weight: " + total_weight);
+        System.out.println("Total activities: " + total_activities);
+        System.out.println();
 
-        //reading files into nodes
-        try {
-            fr = new FileReader("nodes.txt");
-            br = new BufferedReader(fr);
-            String sCurrentLine;
-            int index = 0;
-            while ((sCurrentLine = br.readLine()) != null) {
-//                System.out.println(sCurrentLine);
-                String[] s = sCurrentLine.split(" ");
-                if (min_coor_x < Double.parseDouble(s[1])) {
-                    if (Double.parseDouble(s[1]) < max_coor_x) {
-                        if (min_coor_y < Double.parseDouble(s[2])) {
-                            if (Double.parseDouble(s[2]) < max_coor_y) {
-                                x.add(Double.parseDouble(s[1]));
-                                y.add(Double.parseDouble(s[2]));
-                                node_set.add(Integer.parseInt(s[0]));
-                                node_map.put(Integer.parseInt(s[0]), index);
-                                rev_node_map.put(index, Integer.parseInt(s[0]));
-                                index++;
+        for (int i = 0; i < num_a; i++) {
+            final_answer[i][i] = 0;
+        }
+
+        for (int i = 0; i < num_a; i++) {
+            for (int j = 0; j < num_a; j++) {
+                if (i != j) {
+                    int this_activities = number_of_activities_between_activities[i][j] + 2;
+                    double this_weight = matrix2[i][j];
+                    final_answer[i][j] = (this_activities / this_weight) / ((total_activities - this_activities) / (total_weight - this_weight));
+                    final_answer[j][i] = (this_activities / this_weight) / ((total_activities - this_activities) / (total_weight - this_weight));
+                }
+            }
+        }
+    }
+
+    private static void addingNumberOfActivitiesBetweenActivities() {
+        //updating number_of_activities_between_activities
+        for (int i = 0; i < num_a; i++) {
+            number_of_activities_between_activities[i][i] = -1;
+        }
+        for (int i = 0; i < num_a; i++) {
+            for (int j = 0; j < num_a; j++) {
+                Activity a1 = activities.get(i);
+                Activity a2 = activities.get(j);
+                if (a1 != a2) {
+                    number_of_activities_between_activities[i][j] = get_number_between_two_activities(a1, a2);
+                    number_of_activities_between_activities[j][i] = get_number_between_two_activities(a1, a2);
+                }
+            }
+        }
+    }
+
+    private static void addingNumberOfActivitiesBetweenNodes() {
+        //updating number_of_activities_between_nodes
+        for (Path[] particular_paths : paths) {
+            ArrayList<Integer> temp = new ArrayList<>();
+            for (Path p : particular_paths) {
+                int count = 0;
+                for (int index = 0; index < p.path.size() - 1; index++) {
+                    int n1 = p.path.get(index);
+                    int n2 = p.path.get(index + 1);
+                    int id1 = rev_node_map.get(n1);
+                    int id2 = rev_node_map.get(n2);
+                    ArrayList<Edge> edge_list1 = node_to_edges_map.get(id1);
+                    ArrayList<Edge> edge_list2 = node_to_edges_map.get(id2);
+                    for (Edge other1 : edge_list1) {
+                        for (Edge other2 : edge_list2) {
+                            if (other1 == other2) {
+                                count += other1.number_of_activities;
                             }
                         }
                     }
                 }
+                temp.add(count);
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+            number_of_activities_between_nodes.add(temp);
         }
-        System.out.println(x.size());
-        int num_n = x.size();
+    }
 
-        //reading edge file into edges, only if both nodes are loaded
-        ArrayList<Edge> edges = new ArrayList<>();
-        HashMap<Integer, ArrayList<Edge>> node_to_edges_map = new HashMap<>();
-        try {
-            fr = new FileReader("edges.txt");
-            br = new BufferedReader(fr);
-            String sCurrentLine;
-            while ((sCurrentLine = br.readLine()) != null) {
-//                System.out.println(sCurrentLine);
-                String[] s = sCurrentLine.split(" ");
-                if (node_set.contains(Integer.parseInt(s[1])) && node_set.contains(Integer.parseInt(s[2]))) {
-                    Edge new_edge = new Edge(Integer.parseInt(s[1]), Integer.parseInt(s[2]), Double.parseDouble(s[3]));
-                    edges.add(new_edge);
-                    if (node_to_edges_map.containsKey(Integer.parseInt(s[1]))) {
-                        node_to_edges_map.get(Integer.parseInt(s[1])).add(new_edge);
-                    } else {
-                        node_to_edges_map.put(Integer.parseInt(s[1]), new ArrayList<>());
-                        node_to_edges_map.get(Integer.parseInt(s[1])).add(new_edge);
+    private static void addingDistanceAndPathsBetweenActivities() {
+        // matrix2 stores minimum distance between all activity pairs
+        for (int i = 0; i < num_a; i++) {
+            matrix2[i][i] = 0;
+        }
+
+        // activity_path_matrix stores shorted paths(nodes) between all activity pairs
+
+        for (int i = 0; i < num_a; i++) {
+            activity_path_matrix[i][i] = new Path();
+        }
+
+        // updating the above 2 matrices
+        for (Activity a1 : activities) {
+            for (Activity a2 : activities) {
+                if (a1 != a2) {
+                    DistAndPathSingle distAndPathSingle = get_distance_and_path_using_filter(a1, a2);
+                    matrix2[activity_map.get(a1.new_node_starting_index)][activity_map.get(a2.new_node_starting_index)] = distAndPathSingle.dist;
+                    matrix2[activity_map.get(a2.new_node_starting_index)][activity_map.get(a1.new_node_starting_index)] = distAndPathSingle.dist;
+                    activity_path_matrix[activity_map.get(a1.new_node_starting_index)][activity_map.get(a2.new_node_starting_index)] = distAndPathSingle.path;
+                    Path temp_path = new Path();
+                    for (int i = distAndPathSingle.path.path.size() - 1; i >= 0 ; i--) {
+                        temp_path.path.add(distAndPathSingle.path.path.get(i));
                     }
-                    if (node_to_edges_map.containsKey(Integer.parseInt(s[2]))) {
-                        node_to_edges_map.get(Integer.parseInt(s[2])).add(new_edge);
-                    } else {
-                        node_to_edges_map.put(Integer.parseInt(s[2]), new ArrayList<>());
-                        node_to_edges_map.get(Integer.parseInt(s[2])).add(new_edge);
-                    }
+                    activity_path_matrix[activity_map.get(a2.new_node_starting_index)][activity_map.get(a1.new_node_starting_index)] = temp_path;
                 }
             }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
-        System.out.println(edges.size());
+    }
 
-        // matrix_ is used as input for dijkstra's
-        double[][] matrix_ = new double[num_n][num_n];
-        for (int i = 0; i < num_n; i++) {
-            matrix_[i][i] = 0;
-        }
-        for (Edge e : edges) {
-            int p1 = node_map.get(e.n1);
-            int p2 = node_map.get(e.n2);
-            double dist = get_distance(e);
-            matrix_[p1][p2] = dist;
-            matrix_[p2][p1] = dist;
-        }
-        Dijkstra g = new Dijkstra();
-        ArrayList<double[]> distances = new ArrayList<>();
-        ArrayList<Path[]> paths = new ArrayList<>();
-
-        //starting dijkstra
-        for (int i = 0; i < num_n; i++) {
-            DistAndPath distAndPath = g.dijkstra(matrix_, i, num_n);
-            distances.add(distAndPath.dist);
-            paths.add(distAndPath.path);
-        }
-
-        //stores shortest distance between every 2 nodes
-        Main.distances = distances;
-        //stores shortest path between every 2 nodes
-        Main.paths = paths;
-
-
+    private static void generatingActivitiesForEachEdge(int new_nodes_starting_index) {
         //generating activities for each edge
-        ArrayList<Activity> activities = new ArrayList<>();
         int index1 = 0;
         for (Edge e : edges) {
             double x1 = x.get(node_map.get(e.n1));
@@ -438,168 +510,62 @@ public class Main {
             e.number_of_activities += number_of_activities;
             e.activity_tuples = temp_activity_list;
         }
+    }
 
-        int num_a = activities.size();
-
-        // matrix2 stores minimum distance between all activity pairs
-        double[][] matrix2 = new double[num_a][num_a];
-        for (int i = 0; i < num_a; i++) {
-            matrix2[i][i] = 0;
+    private static void startingDijkstra() {
+        // matrix_ is used as input for dijkstra's
+        double[][] matrix_ = new double[num_n][num_n];
+        for (int i = 0; i < num_n; i++) {
+            matrix_[i][i] = 0;
         }
-
-        // activity_path_matrix stores shorted paths(nodes) between all activity pairs
-        Path[][] activity_path_matrix = new Path[num_a][num_a];
-        for (int i = 0; i < num_a; i++) {
-            activity_path_matrix[i][i] = new Path();
-        }
-
-        // updating the above 2 matrices
-        for (Activity a1 : activities) {
-            for (Activity a2 : activities) {
-                if (a1 != a2) {
-                    DistAndPathSingle distAndPathSingle = get_distance_and_path_using_filter(a1, a2);
-                    matrix2[activity_map.get(a1.new_node_starting_index)][activity_map.get(a2.new_node_starting_index)] = distAndPathSingle.dist;
-                    matrix2[activity_map.get(a2.new_node_starting_index)][activity_map.get(a1.new_node_starting_index)] = distAndPathSingle.dist;
-                    activity_path_matrix[activity_map.get(a1.new_node_starting_index)][activity_map.get(a2.new_node_starting_index)] = distAndPathSingle.path;
-                    Path temp_path = new Path();
-                    for (int i = distAndPathSingle.path.path.size() - 1; i >= 0 ; i--) {
-                        temp_path.path.add(distAndPathSingle.path.path.get(i));
-                    }
-                    activity_path_matrix[activity_map.get(a2.new_node_starting_index)][activity_map.get(a1.new_node_starting_index)] = temp_path;
-                }
-            }
-        }
-
-        //updating number_of_activities_between_nodes
-        for (Path[] particular_paths : paths) {
-            ArrayList<Integer> temp = new ArrayList<>();
-            for (Path p : particular_paths) {
-                int count = 0;
-                for (int index = 0; index < p.path.size() - 1; index++) {
-                    int n1 = p.path.get(index);
-                    int n2 = p.path.get(index + 1);
-                    int id1 = rev_node_map.get(n1);
-                    int id2 = rev_node_map.get(n2);
-                    ArrayList<Edge> edge_list1 = node_to_edges_map.get(id1);
-                    ArrayList<Edge> edge_list2 = node_to_edges_map.get(id2);
-                    for (Edge other1 : edge_list1) {
-                        for (Edge other2 : edge_list2) {
-                            if (other1 == other2) {
-                                count += other1.number_of_activities;
-                            }
-                        }
-                    }
-                }
-                temp.add(count);
-            }
-            number_of_activities_between_nodes.add(temp);
-        }
-
-        //updating number_of_activities_between_activities
-        int[][] number_of_activities_between_activities = new int[num_a][num_a];
-        for (int i = 0; i < num_a; i++) {
-            number_of_activities_between_activities[i][i] = -1;
-        }
-        for (int i = 0; i < num_a; i++) {
-            for (int j = 0; j < num_a; j++) {
-                Activity a1 = activities.get(i);
-                Activity a2 = activities.get(j);
-                if (a1 != a2) {
-                    number_of_activities_between_activities[i][j] = get_number_between_two_activities(a1, a2);
-                    number_of_activities_between_activities[j][i] = get_number_between_two_activities(a1, a2);
-                }
-            }
-        }
-
-        printingEveryThing(matrix_, activities, edges, number_of_activities_between_activities, node_to_edges_map, matrix2, activity_path_matrix);
-
-        //starting calculations for the final answer
-        double total_weight = 0;
         for (Edge e : edges) {
-            total_weight += get_distance(e);
+            int p1 = node_map.get(e.n1);
+            int p2 = node_map.get(e.n2);
+            double dist = get_distance(e);
+            matrix_[p1][p2] = dist;
+            matrix_[p2][p1] = dist;
         }
+        Dijkstra g = new Dijkstra();
 
-        int total_activities = activities.size();
-        System.out.println("Total weight: " + total_weight);
-        System.out.println("Total activities: " + total_activities);
-        System.out.println();
-
-        double[][] final_answer = new double[num_a][num_a];
-        for (int i = 0; i < num_a; i++) {
-            final_answer[i][i] = 0;
+        //starting dijkstra
+        for (int i = 0; i < num_n; i++) {
+            DistAndPath distAndPath = g.dijkstra(matrix_, i, num_n);
+            distances[i] = distAndPath.dist;
+            paths[i] = distAndPath.path;
         }
+    }
 
-        for (int i = 0; i < num_a; i++) {
-            for (int j = 0; j < num_a; j++) {
-                if (i != j) {
-                    int this_activities = number_of_activities_between_activities[i][j] + 2;
-                    double this_weight = matrix2[i][j];
-                    final_answer[i][j] = (this_activities / this_weight) / ((total_activities - this_activities) / (total_weight - this_weight));
-                    final_answer[j][i] = (this_activities / this_weight) / ((total_activities - this_activities) / (total_weight - this_weight));
-                }
-            }
-        }
+    private static void readingEdgeFile() {
+        BufferedReader br;
+        FileReader fr;
 
-        double min_distance_threshold = 0.1; //-1;
-        double max_distance_threshold = 0.3; //100;
-        double max_ratio = Double.MIN_VALUE;
-
-        int max_a1 = -1;
-        int max_a2 = -1;
-
-        for (int i = 0; i < num_a; i++) {
-            for (int j = 0; j < num_a; j++) {
-                if (final_answer[i][j] > max_ratio) {
-                    if (matrix2[i][j] > min_distance_threshold && matrix2[i][j] < max_distance_threshold) {
-                        max_ratio = final_answer[i][j];
-                        max_a1 = i;
-                        max_a2 = j;
+        try {
+            fr = new FileReader("edges.txt");
+            br = new BufferedReader(fr);
+            String sCurrentLine;
+            while ((sCurrentLine = br.readLine()) != null) {
+//                System.out.println(sCurrentLine);
+                String[] s = sCurrentLine.split(" ");
+                if (node_set.contains(Integer.parseInt(s[1])) && node_set.contains(Integer.parseInt(s[2]))) {
+                    Edge new_edge = new Edge(Integer.parseInt(s[1]), Integer.parseInt(s[2]), Double.parseDouble(s[3]));
+                    edges.add(new_edge);
+                    if (node_to_edges_map.containsKey(Integer.parseInt(s[1]))) {
+                        node_to_edges_map.get(Integer.parseInt(s[1])).add(new_edge);
+                    } else {
+                        node_to_edges_map.put(Integer.parseInt(s[1]), new ArrayList<>());
+                        node_to_edges_map.get(Integer.parseInt(s[1])).add(new_edge);
+                    }
+                    if (node_to_edges_map.containsKey(Integer.parseInt(s[2]))) {
+                        node_to_edges_map.get(Integer.parseInt(s[2])).add(new_edge);
+                    } else {
+                        node_to_edges_map.put(Integer.parseInt(s[2]), new ArrayList<>());
+                        node_to_edges_map.get(Integer.parseInt(s[2])).add(new_edge);
                     }
                 }
             }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        System.out.println(matrix2[max_a1][max_a2]);
-        System.out.println("Max density ratio between A and B: " + max_ratio);
-        System.out.println("Activity A: " + node_map.get(activities.get(max_a1).e.n1) + " " + node_map.get(activities.get(max_a1).e.n2) + " " + activities.get(max_a1).toString());
-        System.out.println("Activity B: " + node_map.get(activities.get(max_a2).e.n1) + " " + node_map.get(activities.get(max_a2).e.n2) + " " + activities.get(max_a2).toString());
-        Path path = activity_path_matrix[max_a1][max_a2];
-        System.out.println(path.toString());
-
-        ArrayList<Tuple> best_path = new ArrayList<>();
-
-        if (path.path.size() == 0) {
-            best_path.add(new Tuple(activities.get(max_a1).x, activities.get(max_a1).y));
-            best_path.add(new Tuple(activities.get(max_a2).x, activities.get(max_a2).y));
-        } else if (path.path.size() == 1) {
-            best_path.add(new Tuple(activities.get(max_a1).x, activities.get(max_a1).y));
-            best_path.add(new Tuple(x.get(path.path.get(0)), y.get(path.path.get(0))));
-            best_path.add(new Tuple(activities.get(max_a2).x, activities.get(max_a2).y));
-        } else {
-            if (node_map.get(activities.get(max_a1).e.n1).equals(path.path.get(0))) {
-                best_path.add(new Tuple(activities.get(max_a1).x, activities.get(max_a1).y));
-                for (int p : path.path) {
-                    best_path.add(new Tuple(x.get(p), y.get(p)));
-                }
-                best_path.add(new Tuple(activities.get(max_a2).x, activities.get(max_a2).y));
-            } else if (node_map.get(activities.get(max_a1).e.n2).equals(path.path.get(0))) {
-                best_path.add(new Tuple(activities.get(max_a1).x, activities.get(max_a1).y));
-                for (int p : path.path) {
-                    best_path.add(new Tuple(x.get(p), y.get(p)));
-                }
-                best_path.add(new Tuple(activities.get(max_a2).x, activities.get(max_a2).y));
-            } else {
-                best_path.add(new Tuple(activities.get(max_a2).x, activities.get(max_a2).y));
-                for (int p : path.path) {
-                    best_path.add(new Tuple(x.get(p), y.get(p)));
-                }
-                best_path.add(new Tuple(activities.get(max_a1).x, activities.get(max_a1).y));
-            }
-        }
-        write_into_file(best_path);
-        write_into_file(x, y);
-        write_into_file2(edges);
-        write_into_file3(activities);
-
     }
 
     //writes best path in a file
@@ -651,6 +617,76 @@ public class Main {
         }
         bw.close();
     }
+
+    private static ArrayList<Edge> edges = new ArrayList<>();
+    private static HashMap<Integer, ArrayList<Edge>> node_to_edges_map = new HashMap<>();
+    private static double[][] distances;
+    private static Path[][] paths;
+    private static ArrayList<Double> x = new ArrayList<>();
+    private static ArrayList<Double> y = new ArrayList<>();
+    private static HashSet<Integer> node_set = new HashSet<>();
+    private static HashMap<Integer, Integer> rev_node_map = new HashMap<>();
+    private static HashMap<Integer, Integer> activity_map = new HashMap<>();
+    private static HashMap<Integer, Integer> node_map = new HashMap<>();
+    private static ArrayList<ArrayList<Integer>> number_of_activities_between_nodes = new ArrayList<>();
+    private static int num_n, num_a;
+    private static ArrayList<Activity> activities = new ArrayList<>();
+    private static Path[][] activity_path_matrix;
+    private static double[][] matrix2;
+    private static int[][] number_of_activities_between_activities;
+    private static double[][] final_answer;
+
+    public static void main(String args[]) throws IOException {
+
+        //nodes ending on 21075
+        //activities starting on 21100
+        int new_nodes_starting_index = 21100;
+        // max_coor_x = -math.inf
+        // max_coor_y = -math.inf
+        // min_coor_x = math.inf
+        // min_coor_y = math.inf
+
+        int max_coor_x = -116;
+        int max_coor_y = 36;
+        int min_coor_x = -117;
+        int min_coor_y = 35;
+//
+//        int max_coor_x = 3;
+//        int max_coor_y = 3;
+//        int min_coor_x = -1;
+//        int min_coor_y = -1;
+
+        readingNodeFile(min_coor_x, min_coor_y, max_coor_x, max_coor_y);
+
+        System.out.println(x.size());
+        num_n = x.size();
+        distances = new double[num_n][num_n];
+        paths = new Path[num_n][num_n];
+
+        //reading edge file into edges, only if both nodes are loaded
+        readingEdgeFile();
+
+        System.out.println(edges.size());
+
+        startingDijkstra();
+
+        generatingActivitiesForEachEdge(new_nodes_starting_index);
+
+        num_a = activities.size();
+
+        activity_path_matrix = new Path[num_a][num_a];
+        matrix2 = new double[num_a][num_a];
+        number_of_activities_between_activities = new int[num_a][num_a];
+        final_answer = new double[num_a][num_a];
+
+        addingDistanceAndPathsBetweenActivities();
+        addingNumberOfActivitiesBetweenNodes();
+        addingNumberOfActivitiesBetweenActivities();
+//        printingEveryThing(matrix_, activities, edges, number_of_activities_between_activities, node_to_edges_map, matrix2, activity_path_matrix);
+        addingFinalAnswerMatrix();
+        calculatingTheBestAnswerAndPlottingIt();
+    }
+
 }
 
 class Activity {
