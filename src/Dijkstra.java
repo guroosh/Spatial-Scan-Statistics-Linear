@@ -1,3 +1,6 @@
+import com.graph.components.DistAndPath;
+import com.graph.components.Path;
+
 import java.lang.*;
 
 class Dijkstra {
@@ -45,7 +48,7 @@ class Dijkstra {
         return new DistAndPath(dist, parent);
 //        printSolution(dist, V);
 //        System.out.println();
-//        for (Path p : parent) {
+//        for (com.graph.components.Path p : parent) {
 //            System.out.println(p.toString());
 //        }
     }
