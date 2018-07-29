@@ -8,6 +8,7 @@ import java.io.*;
 import java.util.*;
 
 public class Main {
+
     public static ArrayList<Edge> edges = new ArrayList<>();
     public static HashMap<Integer, ArrayList<Edge>> node_to_edges_map = new HashMap<>();
     public static double[][] distances;

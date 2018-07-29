@@ -7,10 +7,13 @@ import com.graph.components.Tuple;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.ResourceBundle;
 
 public class Files {
+
     public static void readingNodeFile(int min_coor_x, int min_coor_y, int max_coor_x, int max_coor_y)
     {
+
         BufferedReader br;
         FileReader fr;
         //reading files into nodes
