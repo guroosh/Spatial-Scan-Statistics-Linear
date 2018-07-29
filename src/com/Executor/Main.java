@@ -163,7 +163,7 @@ public class Main {
         System.out.println();
     }
 
-    private static void calculatingTheBestAnswerAndPlottingIt() throws IOException {
+    public static void calculatingTheBestAnswerAndPlottingIt() throws IOException {
         double min_distance_threshold = 0.1; //-1;
         double max_distance_threshold = 0.3; //100;
         double max_ratio = Double.MIN_VALUE;
@@ -225,7 +225,7 @@ public class Main {
         Files.write_into_file3(activities);
     }
 
-    private static void addingFinalAnswerMatrix() {
+    public static void addingFinalAnswerMatrix() {
         //starting calculations for the final answer
         double total_weight = 0;
         for (Edge e : edges) {
@@ -253,7 +253,7 @@ public class Main {
         }
     }
 
-    private static void addingNumberOfActivitiesBetweenActivities() {
+    public static void addingNumberOfActivitiesBetweenActivities() {
         //updating number_of_activities_between_activities
         for (int i = 0; i < num_a; i++) {
             number_of_activities_between_activities[i][i] = -1;
@@ -270,7 +270,7 @@ public class Main {
         }
     }
 
-    private static void addingNumberOfActivitiesBetweenNodes() {
+    public static void addingNumberOfActivitiesBetweenNodes() {
         //updating number_of_activities_between_nodes
         for (Path[] particular_paths : paths) {
             ArrayList<Integer> temp = new ArrayList<>();
@@ -297,7 +297,7 @@ public class Main {
         }
     }
 
-    private static void addingDistanceAndPathsBetweenActivities() {
+    public static void addingDistanceAndPathsBetweenActivities() {
         // matrix2 stores minimum distance between all activity pairs
         for (int i = 0; i < num_a; i++) {
             matrix2[i][i] = 0;
@@ -327,7 +327,7 @@ public class Main {
         }
     }
 
-    private static void generatingActivitiesForEachEdge(int new_nodes_starting_index) {
+    public static void generatingActivitiesForEachEdge(int new_nodes_starting_index) {
         //generating activities for each edge
         int index1 = 0;
         for (Edge e : edges) {
@@ -365,7 +365,7 @@ public class Main {
         }
     }
 
-    private static void startingDijkstra() {
+    public static void startingDijkstra() {
         // matrix_ is used as input for dijkstra's
         double[][] matrix_ = new double[num_n][num_n];
         for (int i = 0; i < num_n; i++) {
