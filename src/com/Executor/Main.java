@@ -3,9 +3,14 @@ package com.Executor;
 import com.file.Files;
 import com.graph.components.*;
 import com.graph.functions.Dijkstra;
+import edu.rice.hj.api.SuspendableException;
 
 import java.io.*;
 import java.util.*;
+
+import static edu.rice.hj.Module0.finish;
+import static edu.rice.hj.Module0.launchHabaneroApp;
+import static edu.rice.hj.Module1.forasync;
 
 public class Main {
 
@@ -163,7 +168,7 @@ public class Main {
         System.out.println();
     }
 
-    private static void calculatingTheBestAnswerAndPlottingIt() throws IOException {
+    public static void calculatingTheBestAnswerAndPlottingIt() throws IOException {
         double min_distance_threshold = 0.1; //-1;
         double max_distance_threshold = 0.3; //100;
         double max_ratio = Double.MIN_VALUE;
@@ -225,7 +230,7 @@ public class Main {
         Files.write_into_file3(activities);
     }
 
-    private static void addingFinalAnswerMatrix() {
+    public static void addingFinalAnswerMatrix() {
         //starting calculations for the final answer
         double total_weight = 0;
         for (Edge e : edges) {
@@ -253,7 +258,7 @@ public class Main {
         }
     }
 
-    private static void addingNumberOfActivitiesBetweenActivities() {
+    public static void addingNumberOfActivitiesBetweenActivities() {
         //updating number_of_activities_between_activities
         for (int i = 0; i < num_a; i++) {
             number_of_activities_between_activities[i][i] = -1;
@@ -270,7 +275,7 @@ public class Main {
         }
     }
 
-    private static void addingNumberOfActivitiesBetweenNodes() {
+    public static void addingNumberOfActivitiesBetweenNodes() {
         //updating number_of_activities_between_nodes
         for (Path[] particular_paths : paths) {
             ArrayList<Integer> temp = new ArrayList<>();
@@ -296,8 +301,55 @@ public class Main {
             number_of_activities_between_nodes.add(temp);
         }
     }
+    public static void addingNumberOfActivitiesBetweenNodes_hj() {
+        //updating number_of_activities_between_nodes
+//        try {
+//            finish(() -> {
+//                forasync(0, paths.length, i -> {
+//                    Path[] particular_paths=paths[i];
+        for (Path[] particular_paths : paths) {
+            ArrayList<Integer> temp = new ArrayList<>();
+//            try {
+//            finish(() -> {
+//                forasync(0, particular_paths.length, i -> {
+//                    Path p=particular_paths[i];
+                for (Path p : particular_paths) {
+                    int count = 0;
+//                finish(() -> {
+//                            forasync(0, p.path.size(), index -> {
+                    for (int index = 0; index < p.path.size() - 1; index++) {
+                        int n1 = p.path.get(index);
+                        int n2 = p.path.get(index + 1);
+                        int id1 = rev_node_map.get(n1);
+                        int id2 = rev_node_map.get(n2);
+                        ArrayList<Edge> edge_list1 = node_to_edges_map.get(id1);
+                        ArrayList<Edge> edge_list2 = node_to_edges_map.get(id2);
+                        for (Edge other1 : edge_list1) {
+                            for (Edge other2 : edge_list2) {
+                                if (other1 == other2) {
+                                    count += other1.number_of_activities;
+                                }
+                            }
+                        }
+                    }
+//                            });
+//                        });
+                    temp.add(count);
+//                }
+            }
+//            );
+//            });
+//            } catch (SuspendableException e) {
+//                e.printStackTrace();
+//            }
+                    number_of_activities_between_nodes.add(temp);
+                }
+//                );
+//});
 
-    private static void addingDistanceAndPathsBetweenActivities() {
+    }
+
+    public static void addingDistanceAndPathsBetweenActivities() {
         // matrix2 stores minimum distance between all activity pairs
         for (int i = 0; i < num_a; i++) {
             matrix2[i][i] = 0;
@@ -327,7 +379,7 @@ public class Main {
         }
     }
 
-    private static void generatingActivitiesForEachEdge(int new_nodes_starting_index) {
+    public static void generatingActivitiesForEachEdge(int new_nodes_starting_index) {
         //generating activities for each edge
         int index1 = 0;
         for (Edge e : edges) {
@@ -365,12 +417,21 @@ public class Main {
         }
     }
 
-    private static void startingDijkstra() {
+    public static void startingDijkstra() {
         // matrix_ is used as input for dijkstra's
         double[][] matrix_ = new double[num_n][num_n];
-        for (int i = 0; i < num_n; i++) {
-            matrix_[i][i] = 0;
-        }
+//        try {
+//            finish(() -> {
+//                                forasync(0,num_n, i ->{
+                                    for (int i = 0; i < num_n; i++) {
+                                               matrix_[i][i] = 0;
+                                    }
+
+//             });
+//            });
+//        } catch (SuspendableException e) {
+//            e.printStackTrace();
+//        }
         for (Edge e : edges) {
             int p1 = node_map.get(e.n1);
             int p2 = node_map.get(e.n2);
@@ -380,16 +441,150 @@ public class Main {
         }
         com.graph.functions.Dijkstra g = new Dijkstra();
 
-        //starting dijkstra
-        for (int i = 0; i < num_n; i++) {
+                try {
+            finish(() -> {
+                                forasync(0,num_n, i ->{
+//        for (int i = 0; i < num_n; i++) {
             DistAndPath distAndPath = g.dijkstra(matrix_, i, num_n);
             distances[i] = distAndPath.dist;
             paths[i] = distAndPath.path;
+//        }
+    });
+            });
+        } catch (SuspendableException e) {
+            e.printStackTrace();
         }
     }
 
 
     public static void main(String args[]) throws IOException {
+//        serial_execute();
+        habenero_execute();
+    }
+
+    private static void habenero_execute() {
+        //nodes ending on 21075
+        //activities starting on 21100
+        int new_nodes_starting_index = 21100;
+        // max_coor_x = -math.inf
+        // max_coor_y = -math.inf
+        // min_coor_x = math.inf
+        // min_coor_y = math.inf
+
+        int max_coor_x = -116;
+        int max_coor_y = 36;
+        int min_coor_x = -117;
+        int min_coor_y = 35;
+//
+//        int max_coor_x = 3;
+//        int max_coor_y = 3;
+//        int min_coor_x = -1;
+//        int min_coor_y = -1;
+
+        Files.readingNodeFile(min_coor_x, min_coor_y, max_coor_x, max_coor_y);
+
+        System.out.println(x.size());
+        num_n = x.size();
+        distances = new double[num_n][num_n];
+        paths = new Path[num_n][num_n];
+
+        //reading edge file into edges, only if both nodes are loaded
+        Files.readingEdgeFile();
+//startcounter
+        System.out.println(edges.size());
+//                                  startingDijkstra();
+        launchHabaneroApp(Main::startingDijkstra);
+        generatingActivitiesForEachEdge(new_nodes_starting_index);
+
+        num_a = activities.size();
+
+        activity_path_matrix = new Path[num_a][num_a];
+        matrix2 = new double[num_a][num_a];
+        number_of_activities_between_activities = new int[num_a][num_a];
+        final_answer = new double[num_a][num_a];
+//        addingDistanceAndPathsBetweenActivities();
+        launchHabaneroApp(Main::addingDistanceAndPathsBetweenActivities_hj);
+//        addingNumberOfActivitiesBetweenNodes();
+addingNumberOfActivitiesBetweenNodes();
+//        addingNumberOfActivitiesBetweenActivities();
+        launchHabaneroApp(Main::addingNumberOfActivitiesBetweenActivities_hj);
+//        printingEveryThing(matrix_, activities, edges, number_of_activities_between_activities, node_to_edges_map, matrix2, activity_path_matrix);
+        addingFinalAnswerMatrix();
+        try {
+            calculatingTheBestAnswerAndPlottingIt();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        //ending it
+    }
+
+    private static void addingDistanceAndPathsBetweenActivities_hj() {
+        // matrix2 stores minimum distance between all activity pairs
+        for (int i = 0; i < num_a; i++) {
+            matrix2[i][i] = 0;
+        }
+
+        // activity_path_matrix stores shorted paths(nodes) between all activity pairs
+
+        for (int i = 0; i < num_a; i++) {
+            activity_path_matrix[i][i] = new Path();
+        }
+
+        // updating the above 2 matrices
+        try {
+            finish(() -> {
+                forasync(0, activities.size(), i -> {
+    //                for (Activity a1 : activities) {
+                    forasync(0, activities.size(), j -> {
+                        if (activities.get(i) != activities.get(j)) {
+                            DistAndPathSingle distAndPathSingle = DistAndPath.get_distance_and_path_using_filter(activities.get(i), activities.get(j));
+                            matrix2[activity_map.get(activities.get(i).new_node_starting_index)][activity_map.get(activities.get(j).new_node_starting_index)] = distAndPathSingle.dist;
+                            matrix2[activity_map.get(activities.get(j).new_node_starting_index)][activity_map.get(activities.get(i).new_node_starting_index)] = distAndPathSingle.dist;
+                            activity_path_matrix[activity_map.get(activities.get(i).new_node_starting_index)][activity_map.get(activities.get(j).new_node_starting_index)] = distAndPathSingle.path;
+                            Path temp_path = new Path();
+                            for (int k = distAndPathSingle.path.path.size() - 1; k >= 0; k--) {
+                                temp_path.path.add(distAndPathSingle.path.path.get(k));
+                            }
+                            activity_path_matrix[activity_map.get(activities.get(j).new_node_starting_index)][activity_map.get(activities.get(i).new_node_starting_index)] = temp_path;
+                        }
+                    });
+    //                }
+                });
+            });
+        } catch (SuspendableException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public static void addingNumberOfActivitiesBetweenActivities_hj() {
+         //updating number_of_activities_between_activities
+         for (int i = 0; i < num_a; i++) {
+             number_of_activities_between_activities[i][i] = -1;
+         }
+         try {
+             finish(() -> {
+                 forasync(0,num_a, i -> {
+    //         for (int i = 0; i < num_a; i++) {
+                     forasync(0,num_a, j -> {
+//                     for (int j = 0; j < num_a; j++) {
+                         Activity a1 = activities.get(i);
+                         Activity a2 = activities.get(j);
+                         if (a1 != a2) {
+                             number_of_activities_between_activities[i][j] = Activity.get_number_between_two_activities(a1, a2);
+                             number_of_activities_between_activities[j][i] = Activity.get_number_between_two_activities(a1, a2);
+                         }
+                     });
+    //         }
+                 });});
+         } catch (SuspendableException e) {
+             e.printStackTrace();
+         }
+     }
+
+
+
+    private static void serial_execute() {
 
         //nodes ending on 21075
         //activities starting on 21100
@@ -437,7 +632,11 @@ public class Main {
         addingNumberOfActivitiesBetweenActivities();
 //        printingEveryThing(matrix_, activities, edges, number_of_activities_between_activities, node_to_edges_map, matrix2, activity_path_matrix);
         addingFinalAnswerMatrix();
-        calculatingTheBestAnswerAndPlottingIt();
+        try {
+            calculatingTheBestAnswerAndPlottingIt();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 }
