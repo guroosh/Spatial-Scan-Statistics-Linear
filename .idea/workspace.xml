@@ -291,10 +291,26 @@
       <module name="summer_btp" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
     </configuration>
+    <configuration name="Habenero_Main (1)" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="com.Executor.Habenero.Habenero_Main" />
+      <module name="summer_btp" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.Executor.Habenero.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+    </configuration>
     <configuration name="Main" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="com.Executor.Main" />
       <module name="summer_btp" />
       <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$" />
+    </configuration>
+    <configuration name="MainMT" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="MainMT" />
+      <module name="summer_btp" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
     </configuration>
     <configuration name="ShortestPath" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="ShortestPath" />
@@ -346,14 +362,16 @@
       <item itemvalue="Application.ShortestPath" />
       <item itemvalue="Application.Dijkstra" />
       <item itemvalue="Application.Main" />
+      <item itemvalue="Application.Habenero_Main (1)" />
+      <item itemvalue="Application.MainMT" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Application.MainMT" />
+        <item itemvalue="Application.Habenero_Main (1)" />
         <item itemvalue="Application.Main" />
         <item itemvalue="Application.Dijkstra" />
         <item itemvalue="Application.ShortestPath" />
-        <item itemvalue="Application.Main" />
-        <item itemvalue="Application.Dijkstra" />
       </list>
     </recent_temporary>
   </component>
