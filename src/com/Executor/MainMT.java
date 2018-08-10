@@ -351,6 +351,7 @@ public class MainMT {
     private static int index1 = 0;
     private static int[][] number_of_activities_between_activities;
     private static int[][] number_of_activities_between_nodes;
+    private static int numberOfThreads;
 
     public static void main(String args[]) throws IOException {
 
@@ -372,7 +373,7 @@ public class MainMT {
 //        int min_coor_x = -1;
 //        int min_coor_y = -1;
 
-
+        numberOfThreads = Runtime.getRuntime().availableProcessors();
         BufferedReader br;
         FileReader fr;
 
@@ -578,7 +579,7 @@ public class MainMT {
 
     private static void startingFindNumberBetweenNodes() {
         long startTime = System.currentTimeMillis();
-        int numberOfProcessors = Runtime.getRuntime().availableProcessors();
+        int numberOfProcessors = numberOfThreads;
         System.out.println("THREADS: " + numberOfProcessors);
         ForkJoinPool pool = new ForkJoinPool(numberOfProcessors);
         int runtime = num_n;
@@ -591,7 +592,7 @@ public class MainMT {
 
     private static void startingFindNumberBetweenActivities() {
         long startTime = System.currentTimeMillis();
-        int numberOfProcessors = Runtime.getRuntime().availableProcessors();
+        int numberOfProcessors = numberOfThreads;
         System.out.println("THREADS: " + numberOfProcessors);
         ForkJoinPool pool = new ForkJoinPool(numberOfProcessors);
         int runtime = num_a;
@@ -660,7 +661,7 @@ public class MainMT {
 
     private static void startingFindingPathsAndDistForActivities(double[][] matrix2, Path[][] activity_path_matrix) {
         long startTime = System.currentTimeMillis();
-        int numberOfProcessors = Runtime.getRuntime().availableProcessors();
+        int numberOfProcessors = numberOfThreads;
         System.out.println("THREADS: " + numberOfProcessors);
         ForkJoinPool pool = new ForkJoinPool(numberOfProcessors);
         int runtime = num_a;
@@ -681,7 +682,7 @@ public class MainMT {
 
     private static void startingRunningDijkstra(double[][] matrix_) {
         long startTime = System.currentTimeMillis();
-        int numberOfProcessors = Runtime.getRuntime().availableProcessors();
+        int numberOfProcessors = numberOfThreads;
         System.out.println("THREADS: " + numberOfProcessors);
         ForkJoinPool pool = new ForkJoinPool(numberOfProcessors);
         int runtime = num_n;
@@ -732,7 +733,7 @@ public class MainMT {
 
     private static void startingGeneratingActivityFOrEachEdge() {
         long startTime = System.currentTimeMillis();
-        int numberOfProcessors = Runtime.getRuntime().availableProcessors();
+        int numberOfProcessors = numberOfThreads;
         System.out.println("THREADS: " + numberOfProcessors);
         ForkJoinPool pool = new ForkJoinPool(numberOfProcessors);
         int runtime = num_e;

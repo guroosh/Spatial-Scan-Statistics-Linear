@@ -7,7 +7,6 @@ import com.graph.components.Tuple;
 
 import java.io.*;
 import java.util.ArrayList;
-import java.util.ResourceBundle;
 
 public class Files {
 
@@ -79,12 +78,16 @@ public class Files {
     }
 
     //writes best path in a file
-    public static void write_into_file(ArrayList<Tuple> best_path) throws IOException {
+    public static void write_into_file(ArrayList<ArrayList<Tuple>> best_path) throws IOException {
         File fout = new File("output_best_path.txt");
         FileOutputStream fos = new FileOutputStream(fout);
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fos));
-        for (Tuple t : best_path) {
-            bw.write(t.x + " " + t.y);
+        for (ArrayList<Tuple> at : best_path) {
+            for (Tuple t : at) {
+                bw.write(t.x + " " + t.y);
+                bw.newLine();
+            }
+            bw.write("#");
             bw.newLine();
         }
         bw.close();
